@@ -70,7 +70,7 @@ pub fn evaluate_expression(expression: &mut Expression) -> Result<Literal, Strin
 
             let expr = expression.tokens.clone();
 
-            for tok in expr.iter() {
+            for tok in &expr {
                 if let Token::Identifier(ident) = tok {
                     if !args.contains(ident) {
                         return Err("Non local variable in function".to_string());
@@ -113,7 +113,7 @@ fn process_function(
             }
             _ => return Err("Invalid argument".to_string()),
         };
-        new_args.insert(arg.to_string(), tok_val);
+        new_args.insert(arg.clone(), tok_val);
     }
     std::mem::swap(&mut new_args, expression.arguments);
     std::mem::swap(&mut some_expr, &mut expression.tokens);

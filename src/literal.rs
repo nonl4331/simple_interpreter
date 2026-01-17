@@ -38,7 +38,7 @@ impl Add for Literal {
                 Literal::String(s) => Ok(Literal::String(v + &s)),
                 _ => Err("Failed to Add".to_string()),
             },
-            _ => Err("Failed to Add".to_string()),
+            Literal::Unit => Err("Failed to Add".to_string()),
         }
     }
 }

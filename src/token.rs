@@ -25,7 +25,7 @@ pub enum Token {
     }
 }*/
 
-pub fn tokenify(string: String) -> Vec<Token> {
+pub fn tokenify(string: &str) -> Vec<Token> {
     let string = string.trim();
     let mut tokens = Vec::new();
 
@@ -58,9 +58,9 @@ pub fn tokenify(string: String) -> Vec<Token> {
                 "fn" => tokens.push(Token::Fn),
                 _ => {
                     if is_string {
-                        tokens.push(Token::Literal(Literal::String(buffer.clone())))
+                        tokens.push(Token::Literal(Literal::String(buffer.clone())));
                     } else {
-                        tokens.push(Token::Identifier(buffer.clone()))
+                        tokens.push(Token::Identifier(buffer.clone()));
                     }
                 }
             }
@@ -79,10 +79,10 @@ pub fn tokenify(string: String) -> Vec<Token> {
             continue;
         }
 
-        if ('a'..='z').contains(&c) || ('A'..='Z').contains(&c) || '_' == c {
+        if c.is_ascii_lowercase() || c.is_ascii_uppercase() || '_' == c {
             ident_buffer.push(c);
             continue;
-        } else if ('0'..='9').contains(&c) || '.' == c {
+        } else if c.is_ascii_digit() || '.' == c {
             number_buffer.push(c);
             continue;
         }
@@ -110,19 +110,17 @@ pub fn tokenify(string: String) -> Vec<Token> {
             '%' => tokens.push(Token::Remainder),
             ')' => {
                 if let Token::LeftBracket = *tokens.last().unwrap() {
-                    tokens.push(Token::Literal(Literal::Unit))
+                    tokens.push(Token::Literal(Literal::Unit));
                 } else {
-                    tokens.push(Token::RightBracket)
+                    tokens.push(Token::RightBracket);
                 }
             }
             '(' => tokens.push(Token::LeftBracket),
-            ' ' => continue,
+            ' ' => {},
             _ => panic!("Error parsing at {i}."),
         }
     }
-    if is_string {
-        panic!("Unmatched \"");
-    }
+    assert!(!is_string, "Unmatched \"");
 
     parse_number(&mut tokens, string.len(), &mut number_buffer);
     parse_ident(&mut tokens, &mut ident_buffer, is_string);
